@@ -74,13 +74,18 @@ inline ll InverseM(ll n)
 //int dx[]={2,1,-1,-2,-2,-1,1,2};int dy[]={1,2,2,1,-1,-2,-2,-1};//Knight Direction
 //int dx[]={2,1,-1,-2,-1,1};int dy[]={0,1,1,0,-1,-1}; //Hexagonal Direction
 
-vector<string> v;
+vector<string> plainString;
+vectorr<int> stringLength, revSValue;
+
 void breakOnSpace(string s)
 {
 	stringstream ss;
 	ss << s;
-	while(ss>>s)
-		v.pb(s);
+	while(ss>>s){
+		plainString.pb(s);
+		stringLength.pb(s.length());
+	}
+	ss.clear();
 }
 void TakeInput()
 {
@@ -89,11 +94,33 @@ void TakeInput()
 	getline(cin,plainText);
 	
 }
+
+
+int calcRevBinary()
+{
+	int charValue,revCharValue,minimum=-1;
+	string bitString, residue;
+	for(string s:plainString)
+	{
+		for(char ch:s)
+		{
+			charValue = (int)ch;
+			bitString = bitset<8>(charValue).to_string();
+			reverse(all(bitString));
+			revCharValue = bitset<8> (string(bitString)).to_ulong();
+			//if(revCharValue == charValue)
+			//	residu
+			revSValue.pb(revCharValue);
+			minimum = min(minimum,revCharValue);
+		}
+	}
+	return  minimum;
+}
 int main()
 {
        // freopen("D:\\Coding\\in.txt","r",stdin);
        // freopen("D:\\Coding\\out.txt","w",stdout);
 	TakeInput();
-
+	calcRevBinary();
     return 0;
 }
