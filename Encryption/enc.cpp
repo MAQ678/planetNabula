@@ -75,7 +75,7 @@ inline ll InverseM(ll n)
 //int dx[]={2,1,-1,-2,-1,1};int dy[]={0,1,1,0,-1,-1}; //Hexagonal Direction
 
 vector<string> plainString;
-vectorr<int> stringLength, revSValue;
+vector<int> stringLength, revSValue;
 
 void breakOnSpace(string s)
 {
@@ -87,40 +87,149 @@ void breakOnSpace(string s)
 	}
 	ss.clear();
 }
-void TakeInput()
+int TakeInput()
 {
 	string plainText;
+	int v;
 	cout<<"Enter the plain-text: ";
 	getline(cin,plainText);
-	
+	cin>>v;
+	breakOnSpace(plainText);
+    return v;
 }
 
 
 int calcRevBinary()
 {
-	int charValue,revCharValue,minimum=-1;
+	int charValue,revCharValue,minimum=500;
 	string bitString, residue;
 	for(string s:plainString)
 	{
+	  //  cout<<s<<endl;
 		for(char ch:s)
 		{
 			charValue = (int)ch;
 			bitString = bitset<8>(charValue).to_string();
 			reverse(all(bitString));
+		//	cout<<ch<<" "<<bitString<<endl;
 			revCharValue = bitset<8> (string(bitString)).to_ulong();
 			//if(revCharValue == charValue)
 			//	residu
 			revSValue.pb(revCharValue);
-			minimum = min(minimum,revCharValue);
+			if(revCharValue>=8)
+                minimum = min(minimum,revCharValue);
 		}
 	}
 	return  minimum;
+}
+vector<int> unChanged;
+
+int pOGen(string s)
+{
+    int result = bitset<8> (string(s)).to_ulong();
+    result++;   //2's complement
+    return bitset<8> (result).to_ulong();   //check if exceed to 9 th bit
+}
+
+int phaseOne(int val, int x)
+{
+    bitset<4> quo (val/x);
+    bitset<4> rem (val%x);
+  //  cout<<quo.to_string()<<endl;
+    quo.flip();//1st complement
+    rem.flip();//||
+    string s=quo.to_string();
+  //  cout<<s<<endl;
+    s+=rem.to_string();
+    return pOGen(s);
+//    int result = bitset<8> (string(s)).to_ulong();
+//    result++;   //2's complement
+//    return bitset<8> (result).to_ulong();   //check if exceed to 9 th bit
+
+}
+int phaseExtra(int val)
+{
+    bitset<8> al (val);
+    al.flip();
+    return pOGen(al.to_string());
+}
+int gen2(int val)
+{
+    return val+plainString.size();
+}
+int phaseTwo(int val, int x,int type)
+{
+    if(type == 1)
+    {
+        return gen2(val);
+    }
+    bitset<4> quo (val/x);
+    bitset<4> rem (val%x);
+    string s=quo.to_string();
+    s+=rem.to_string();
+    return gen2(bitset<8>(string(s)).to_ulong());
+}
+
+int phaseS(int val, int& v,int minimum)
+{
+    if(v>0)
+        {
+            v--;
+            return phaseOne(val, minimum);
+        }
+    else
+    {
+        int got=phaseTwo(val, minimum,0);
+     //   cout<<val<<" "<<got<<endl;
+        return got;
+    }
+}
+
+string calcRemQuo(int minimum,int v)
+{
+    string cipherText;
+    int got;
+    for(int val:revSValue)
+    {
+     //   cout<<(char)val<<endl;
+        if((val%minimum>=16)||(val/minimum>=16))
+        {
+            unChanged.pb(val);
+            if(v>0) got = phaseExtra(val),v--;
+            else got = phaseTwo(val,minimum,1);
+      //      cout<<got<<endl;
+            cipherText+=(char)got;
+        }
+        else
+        {
+            got=phaseS(val,v,minimum);
+     //       cout<<got<<endl;
+            cipherText+=(char)got;
+        }
+
+    }
+   /* for(int val:unChanged)
+    {
+        got=phaseS(val,v,minimum);
+      //  cout<<got<<endl;
+        cipherText+=(char)got;
+    }
+    */
+    return cipherText;
+}
+//The secret code is @Nabu$%2#*()
+
+void print(string cipherText)
+{
+    cout<<"Cipher-Text is: "<<cipherText<<endl;
 }
 int main()
 {
        // freopen("D:\\Coding\\in.txt","r",stdin);
        // freopen("D:\\Coding\\out.txt","w",stdout);
-	TakeInput();
-	calcRevBinary();
+	int v = TakeInput()-1;
+	int minimum = calcRevBinary();
+	string cipherText = calcRemQuo(minimum, v);
+	print(cipherText);
     return 0;
 }
