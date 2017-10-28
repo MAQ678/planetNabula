@@ -101,7 +101,7 @@ int TakeInput()
 
 int calcRevBinary()
 {
-	int charValue,revCharValue,minimum=500;
+	int charValue,revCharValue,minimum=inf;
 	string bitString, residue;
 	for(string s:plainString)
 	{
@@ -217,19 +217,119 @@ string calcRemQuo(int minimum,int v)
     */
     return cipherText;
 }
-//The secret code is @Nabu$%2#*()
+
 
 void print(string cipherText)
 {
     cout<<"Cipher-Text is: "<<cipherText<<endl;
 }
+
+ll keyGen(int divisor)
+{
+    ll val=plainString.size();
+    string revDiv=bitset<64>(divisor).to_string();
+    ///reverse(all(revDiv));
+   // cout<<revDiv<<endl;
+   // cout<<bitset<64>(string(revDiv)).to_ulong()<<endl;
+   ll z=0,twoP=1;
+   for(char ch:revDiv)
+   {
+       if(ch=='1')z+=twoP;
+       twoP<<=1;
+   }
+  // cout<<z<<endl;
+   val^= z;
+//cout<<ak.to
+  //  val^=ak.to_ulong();
+
+    bitset<64>wk (val);
+    wk.flip();
+    revDiv=wk.to_string();
+    val=0,twoP=1;
+   for(char ch:revDiv)
+   {
+       if(ch=='1')val+=twoP;
+       twoP<<=1;
+   }
+
+    //val=wk.to_ulong();
+    val++;
+
+    return val;
+
+}
+
+string calcRemQuo1(int m,int v)
+{
+    string cT,after;
+    int left=v,qr,val,i;
+    fr(i,revSValue.size())
+    {
+        val=revSValue[i];
+        if((val%m>15)||(val/m>15))
+        {
+           val^=v;
+          // cout<<i<<" "<<val<<" ";
+           after+=(char)val;
+
+        }
+        val=revSValue[i];
+       // else
+        {
+            qr=val;
+            if(i<(v-1))
+            {
+                bitset<8>ak (val);
+                ak.flip();
+                qr=ak.to_ulong();
+            }
+            qr^=v;
+           // cout<<qr<<" ";
+            cT+=(char)qr;
+        }
+    }
+//    cout<<cT;nl;
+   // nl;
+    cT+=after;
+  //  cout<<cT;nl;
+    return cT;
+}
+
+string table4(int v)
+{
+    string cT;
+    for(int val:stringLength)
+    {
+        val^=v;
+        bitset<8>ak (val);
+        ak.flip();
+        val=ak.to_ulong();
+        //cout<<val<<" ";
+        cT+=(char)val;
+    }
+   // cout<<cT<<"555"<<endl;
+    //nl;
+    return cT;
+}
+//The secret code is @Nabu$%2#*()
 int main()
 {
        // freopen("D:\\Coding\\in.txt","r",stdin);
-       // freopen("D:\\Coding\\out.txt","w",stdout);
-	int v = TakeInput()-1;
+        //freopen("D:\\out.txt","w",stdout);
+	int v = TakeInput();
 	int minimum = calcRevBinary();
-	string cipherText = calcRemQuo(minimum, v);
-	print(cipherText);
+	string cipherText = calcRemQuo1(minimum, v);
+	string tab4=table4(v);
+
+	//cipherText=table4(v)+cipherText;
+	cout<<"Cipher-Text is: ";
+	cout<<tab4<<endl;
+	cout<<cipherText<<endl;
+
+	cout<<"Key is: "<<keyGen(minimum)<<endl;
+
+	//for(char ch:tab4)cout<<ch<<" ";
+	//for(char ch:cipherText)cout<<ch<<" ";
+	//print(tab4+cipherText);
     return 0;
 }
