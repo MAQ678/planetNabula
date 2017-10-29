@@ -93,6 +93,7 @@ int TakeInput()
 	int v;
 	cout<<"Enter the plain-text: ";
 	getline(cin,plainText);
+	cout<<"Give the value of v: ";
 	cin>>v;
 	breakOnSpace(plainText);
     return v;
@@ -258,25 +259,47 @@ ll keyGen(int divisor)
     return val;
 
 }
+int frstCom(int val)
+{
+    bitset<8>ak (val);
+    ak.flip();
+    return ak.to_ulong();
+}
 
 string calcRemQuo1(int m,int v)
 {
-    string cT,after;
-    int left=v,qr,val,i;
+    string cT,after,Quo,Rem;
+    int left=v,qr,val,i,ck;
     fr(i,revSValue.size())
     {
         val=revSValue[i];
+        ck=0;
         if((val%m>15)||(val/m>15))
         {
+            qr=val;
            val^=v;
           // cout<<i<<" "<<val<<" ";
            after+=(char)val;
+           ck=1;
 
         }
-        val=revSValue[i];
+        else
+        {
+            Quo=bitset<4>(val/m).to_string();
+            Rem=bitset<4>(val%m).to_string();
+            qr=bitset<8>(string(Quo+Rem)).to_ulong();
+        }
+        if(i<(v-1))
+            qr=frstCom(qr);
+        qr^=v;
+       // cout<<qr<<" ";
+        cT+=(char)qr;
+
+        /*val=revSValue[i];
        // else
         {
             qr=val;
+
             if(i<(v-1))
             {
                 bitset<8>ak (val);
@@ -284,9 +307,10 @@ string calcRemQuo1(int m,int v)
                 qr=ak.to_ulong();
             }
             qr^=v;
-           // cout<<qr<<" ";
+            cout<<val<<" "<<qr<<" kdkfdf ";
             cT+=(char)qr;
         }
+        */
     }
 //    cout<<cT;nl;
    // nl;
